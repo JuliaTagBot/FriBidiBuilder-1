@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for giordano/FriBidiBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: sdxye5dbT/cucxfnPhkhx+Swfg/RaGlmvu939tC9hryjfAyYqmb95xh96DYNlnVV0YAucivBn86Q8Y4onjegcai9Wclk68d5eljO/ngATHVJQu8S+SqcUcwuNBmO4sQyErke0k0NOMIxz/Zb+t8ao0k8HxDecqBNILRFnIK6Wsmo3lPbMmeeuWE7P2i7nGfVIDtalNtQXcR/YkNRQ1F5wIdI0COmd+qngM1lWcgmKRI3ugb3kBNaGdAjyoBbLFBNZR96cqXzAp1En3Yw1yHcgE+2abSviEKBVIBpvNZ7PvBEHoTlbHTr4uGF/hE6J+ODgrAn3BUC/9LC5hyt0RybCPW9/Mebav1nCeTbBtta4pUnZAFul1fXip8yE8FdsbQh0CRs7/cJSmlN0tNPvTuzA0O4hV2FCqZCrHBBesTQJ66eFIMgfRmO8c8EPCLCmTWBtbNAlxkwSndBb4gGn4CxFiC9sVv7RBXEmNukjf8bFe539iIG13wmjYiCP1PdcWOVmpBBvrTdUdi61QDVTapG49Y2Qq1/H2wCOR2iTbIqcNTbJJiu7dgFOVFloDxmWb7bbl9Y2Kwq7mVADnuFCO7kEgGOOfcSmC8zHPG6PJibcf+zZiJ43EpSKqx0D9uZYt/1/P46o9FJCEDYmuNzGUcvRw8NEcF90DRywF4elBUn/js=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: giordano/FriBidiBuilder
+        tags: true
